@@ -6,57 +6,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.locadora.backend.model.Ator;
-import com.locadora.backend.repository.AtorRepository;
+import com.locadora.backend.service.AtorService;
 
 @RestController
 @RequestMapping("/atores")
 @CrossOrigin(origins = "http://localhost:4200")
 public class AtorController {
-    // faz o Spring fornecer automaticamente uma instância do Repository para o Controller.
     @Autowired
-    private AtorRepository atorRepository;
+    private AtorService atorService;
 
-    // Lista todos os atores
     @GetMapping
     public List<Ator> listar() {
-        return atorRepository.findAll();
+        return atorService.listar();
     }
 
-    // Cadastra um novo ator
     @PostMapping
     public Ator cadastrar(@RequestBody Ator ator) {
-        return atorRepository.save(ator);
+        return atorService.cadastrar(ator);
     }
 
-    // Atualiza um ator existente
     @PutMapping("/{id}")
     public Ator atualizar(@PathVariable Long id, @RequestBody Ator ator) {
-
-        Ator atorExistente = atorRepository.findById(id).orElse(null);
-
-        if (atorExistente == null) {
-            throw new org.springframework.web.server.ResponseStatusException(
-                org.springframework.http.HttpStatus.NOT_FOUND,
-                "Ator não encontrado"
-            );
-        }
-
-        atorExistente.setNome(ator.getNome());
-
-        return atorRepository.save(atorExistente);
+        return atorService.atualizar(id, ator);
     }
 
-    // Exclui um ator
     @DeleteMapping("/{id}")
     public void excluir(@PathVariable Long id) {
-
-        if (!atorRepository.existsById(id)) {
-            throw new org.springframework.web.server.ResponseStatusException(
-                org.springframework.http.HttpStatus.NOT_FOUND,
-                "Ator não encontrado"
-            );
-        }
-
-        atorRepository.deleteById(id);
+        atorService.excluir(id);
     }
 }
